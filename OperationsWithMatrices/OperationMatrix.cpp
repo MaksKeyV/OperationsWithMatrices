@@ -160,10 +160,17 @@ double Matrix::MatrixNorm(vector<vector<double>>& MatrixFirs)
 vector<vector<double>> Matrix::MatrixInverse(vector<vector<double>>& MatrixFirs)
 {
 	double determ = MatrixDeterm(MatrixFirs);
-	if (determ == 0) throw runtime_error("ћатрица не обратима, определитель равен 0");
+	if (determ == 0) throw string("ћатрица не обратима, определитель равен 0");
 
 	MatrixResult = vector<vector<double>>(MatrixFirs.size(), vector<double>(MatrixFirs[0].size()));
 	int sizeMatrix = MatrixFirs.size();
+
+	if (sizeMatrix == 1)
+	{
+		MatrixResult[0][0] = 1.0 / (MatrixFirs[0][0]);
+		return MatrixResult;
+	}
+
 	vector<vector<double>> matrix = vector<vector<double>>(MatrixFirs.size(), vector<double>(MatrixFirs[0].size()));
 
 	for (int i = 0; i < MatrixFirs.size(); i++)
@@ -210,10 +217,9 @@ int Matrix::MatrixRang(vector<vector<double>>& MatrixFirs)
 				if (collum != row)
 				{
 					double mult = MatrixFirs[collum][row] / MatrixFirs[row][row];
+
 					for (int i = 0; i < rank; i++) 
-					{
 						MatrixFirs[collum][i] -= mult * MatrixFirs[row][i];
-					}
 				}
 			}
 		}
@@ -235,9 +241,7 @@ int Matrix::MatrixRang(vector<vector<double>>& MatrixFirs)
 			{
 				rank--;
 				for (int i = 0; i < MatrixFirs.size(); i++)
-				{
 					MatrixFirs[i][row] = MatrixFirs[i][rank];
-				}
 			}
 			row--;
 		}

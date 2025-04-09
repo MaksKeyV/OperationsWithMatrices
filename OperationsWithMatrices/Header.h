@@ -22,7 +22,7 @@ class Matrix
 	public:
 		vector<vector<double>> MatrixResult;
 		map<string, vector<vector<double>>> usersMatrix;
-		const set<string> Operations = { "+", "-", "*", "D", "T", "Norm", "Inv", "Rang"};
+		const set<string> Operations = { "+", "-", "*", "Det", "T", "Norm", "Inv", "Rang"};
 		int precision = 3;
 		
 

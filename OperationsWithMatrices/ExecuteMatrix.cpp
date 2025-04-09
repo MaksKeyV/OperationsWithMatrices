@@ -81,15 +81,16 @@ void Matrix::executeMatrix(string oper, string firstOperand)
 
 	if (oper == "Norm")
 	{
-		cout << MatrixNormMax(MatrixFirs) << endl;
-		cout << MatrixNormM(MatrixFirs) << endl;
-		cout << MatrixNormL(MatrixFirs) << endl;
-		cout << MatrixNorm(MatrixFirs) << endl;
+		cout << "Matrix Norms:" << endl;
+		cout << "Max Norm: " << MatrixNormMax(MatrixFirs) << endl;
+		cout << "M Norm: " << MatrixNormM(MatrixFirs) << endl;
+		cout << "L Norm: " << MatrixNormL(MatrixFirs) << endl;
+		cout << "K Norm: " << MatrixNorm(MatrixFirs) << endl;
 	}
 
 	if (oper == "Inv")
 	{
-		if (MatrixFirs.size() != MatrixFirs[0].size()) throw runtime_error("Матрица должна быть квадратной для вычисления обратной");
+		if (MatrixFirs.size() != MatrixFirs[0].size()) throw string("Матрица должна быть квадратной для вычисления обратной");
 		MatrixInverse(MatrixFirs);
 		MatrixOut(MatrixResult);
 		saveResult();

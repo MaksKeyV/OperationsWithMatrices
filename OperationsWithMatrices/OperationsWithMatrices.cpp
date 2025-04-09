@@ -150,7 +150,7 @@ void Matrix::userCalculateMatrix()
         << "Матричное сложение  \"+\"" << endl
         << "Матричное вычитание \"-\"" << endl
         << "Матричное умножение \"*\"" << endl
-        << "Детерминант матрицы \"D\"" << endl
+        << "Детерминант матрицы \"Det\"" << endl
         << "Транспонирование матрицы \"T\"" << endl
         << "Норма матрицы \"Norm\"" << endl
         << "Норма матрицы \"Inv\"" << endl
@@ -249,7 +249,7 @@ void Matrix::changePrecision()
             precision = number;
             cout << endl << endl;
         }
-        else cout << "Неправильный ввод, требуется число меньше 6" << endl << endl;
+        else cout << "Неправильный ввод, требуется число меньше 4" << endl << endl;
     }
     else cout << "Неправильный ввод, требуется неотрицательное целое число" << endl << endl;
 }
@@ -305,8 +305,8 @@ void Matrix::menu()
 int main()
 {
     setlocale(LC_ALL, "Russian");
-
+    
     Matrix matrix;
-
+    
     matrix.menu();
 }

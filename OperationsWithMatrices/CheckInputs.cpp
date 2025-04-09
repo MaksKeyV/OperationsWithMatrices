@@ -22,13 +22,23 @@ bool Matrix::correctNumberMatrix(string& input)
         return false;
     }
 
+    if (numeric_limits<double>::max)
+    {
+        //cout << "Ошибка: элемент имеет большой размер" << endl;
+        //return false;
+    }
+
     bool hasDecimal = false;
 
     replace(input.begin(), input.end(), '.', ',');
 
+    if (input == "-0" or input == "+0") 
+        input = '0';
+
     if (input[0] == ',')
     {
         input = '0' + input;
+        return true;
     }
 
     for (int i = 0; i < input.size(); i++)
@@ -59,8 +69,6 @@ bool Matrix::correctNumberMatrix(string& input)
         return false;
     }
 
-    if (input == "-0" or input == "+0") input = '0';
-
     return true;
 }
 
@@ -88,6 +96,12 @@ int Matrix::correctSizeMatrix(const string prompt)
             continue;
         }
 
+        if (numeric_limits<double>::max)
+        {
+            //cout << "Ошибка: размер матрицы имеет большой размер" << endl;
+            //return false;
+        }
+
         if (input == "0")
         {
             cout << "Ошибка: размер матрицы не может быть равен '0'" << endl;
@@ -99,7 +113,7 @@ int Matrix::correctSizeMatrix(const string prompt)
         {
             if (!isdigit(input[i]))
             {
-                cout << "Ошибка: введите только число" << endl;
+                cout << "Ошибка: введите только целое число" << endl;
                 validNum = false;
                 break;
             }

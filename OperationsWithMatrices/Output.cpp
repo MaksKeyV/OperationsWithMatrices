@@ -2,11 +2,11 @@
 
 vector<int> Matrix::columnWidths(vector<vector<double>>& matrix)
 {
-    vector<int> colWidths(matrix[0].size(), 0);
+    vector<int> colWidth(matrix[0].size());
 
     for (int j = 0; j < matrix[0].size(); j++)
     {
-        int maxW = 0;
+        int maxWidth = 0;
 
         for (int i = 0; i < matrix.size(); i++)
         {
@@ -14,12 +14,12 @@ vector<int> Matrix::columnWidths(vector<vector<double>>& matrix)
             ss << fixed << setprecision(precision) << matrix[i][j];
             string str = ss.str();
             replace(str.begin(), str.end(), ',', '.');
-            if (str.size() > maxW) maxW = str.size();
+            if (str.size() > maxWidth) maxWidth = str.size();
         }
-        colWidths[j] = maxW;
+        colWidth[j] = maxWidth;
     }
 
-    return colWidths;
+    return colWidth;
 }
 
 void Matrix::MatrixOut(vector<vector<double>>& matrix)
