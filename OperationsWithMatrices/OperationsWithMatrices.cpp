@@ -7,7 +7,14 @@ string Matrix::inputNameMatrix(bool fladOutMsg)
 
     do
     {
-        if (fladOutMsg) cout << "Введите название матрицы или команду 'back', чтобы вернуться в меню" << endl;
+        cout << "Существующие пользовательские матрицы" << endl;
+        outputAllMatrix();
+
+        if (fladOutMsg) 
+        {
+            cout << "Введите название матрицы или команду 'back', чтобы вернуться в меню" << endl;
+            cout << "Если введенное имя уже существует, оно будет перезаписано" << endl;
+        }
 
         cout << "Имя должно начинаться с латинской буквы и может содержать цифры" << endl;
         cout << "Введите имя матрицы: ";
@@ -36,7 +43,20 @@ void Matrix::inputMatrix()
     }
 
     int row = correctSizeMatrix("Введите количество строк: ");
+
+    if (row == -1)
+    {
+        system("cls");
+        return;
+    }
+
     int collum = correctSizeMatrix("Введите количество столбцов: ");
+
+    if (collum == -1)
+    {
+        system("cls");
+        return;
+    }
 
     vector<vector<double>> matrix(row, vector<double>(collum));
 
@@ -51,6 +71,14 @@ void Matrix::inputMatrix()
             {
                 cout << "Введите " << matrixName << "[" << i + 1 << "][" << j + 1 << "]: ";
                 getline(cin, input);
+
+                transform(input.begin(), input.end(), input.begin(), ::tolower);
+
+                if (input == "back")
+                {
+                    system("cls");
+                    return;
+                }
 
                 if (correctNumberMatrix(input))
                 {
@@ -68,7 +96,11 @@ void Matrix::inputMatrix()
 
     usersMatrix[matrixName] = matrix;
 
+  
     system("cls");
+
+    if (checkMatrixExist(matrixName)) cout << "Матрица с именем '" << matrixName << "' перезаписана" << endl;
+
     cout << "Введенная матрица '" << matrixName << "':" << endl;
     MatrixOut(matrix);
     cout << endl;
@@ -114,20 +146,15 @@ string Matrix::inputMatrixOperand(string strOperand)
 
         if (matrixName == "back") return "back";
 
-        if (all_of(matrixName.begin(), matrixName.end(), [](char s) { return isdigit(s) || s == '.' || s == ',' || s == '-'; }))
+        if (all_of(matrixName.begin(), matrixName.end(), [](char c) { return isdigit(c) or c == '.' or c == ',' or c == '-'; }))
         {
             if (correctNumberMatrix(matrixName)) return matrixName;
             correctInput = false;
         }
         else if (all_of(matrixName.begin(), matrixName.end(), ::isalnum))
         {
-            if (not correctNameMatrix(matrixName))
-            {
-                cout << "Ошибка: имя матрицы должно начинаться с латинской буквы и может содержать цифры" << endl << endl;
-                correctInput = false;
-            }
-
-            if (checkMatrixExist(matrixName)) return matrixName;
+            if (not correctNameMatrix(matrixName)) correctInput = false;
+            else if (checkMatrixExist(matrixName)) return matrixName;
             else  cout << "Ошибка: матрица с именем '" << matrixName << "' не найдена" << endl << endl;
             correctInput = false;
         }
@@ -188,7 +215,7 @@ void Matrix::userCalculateMatrix()
         return;
     }
 
-    string expr = "'" + oper + "'" + firstMatrix;
+    string expr = "'" + oper + "' " + firstMatrix;
     string secondMatrix;
 
     if (twoOperator(oper))
@@ -200,7 +227,7 @@ void Matrix::userCalculateMatrix()
             system("cls");
             return;
         }
-        expr = firstMatrix + "'" + oper + "'" + secondMatrix;
+        expr = firstMatrix + " '" + oper + "' " + secondMatrix;
     }
 
     try

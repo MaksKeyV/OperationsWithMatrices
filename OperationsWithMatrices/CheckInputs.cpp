@@ -18,22 +18,37 @@ bool Matrix::correctNumberMatrix(string& input)
 
     if (input == "." or input == "-." or input == "," or input == "-,")
     {
-        cout << "Ошибка: некорректное число" << endl;
+        cout << "Ошибка: некорректный ввод '" << input << "', нельзя вводить '.', '-.', ',', '-,'" << endl;
         return false;
     }
 
-    if (numeric_limits<double>::max)
+    if (input.length() > 20)
     {
-        //cout << "Ошибка: элемент имеет большой размер" << endl;
-        //return false;
+        cout << "Ошибка: число '" << input << "' слишком длинное (допустимо не более 20 символов)" << endl;
+        return false;
     }
 
-    bool hasDecimal = false;
-
+    for (char c : input)
+    {
+        if (isalpha(c))
+        {
+            cout << "Ошибка: введено некорректное значение, буквы не допускаются" << endl;
+            return false;
+        }
+    }
+    
     replace(input.begin(), input.end(), '.', ',');
 
-    if (input == "-0" or input == "+0") 
-        input = '0';
+    int posNotPlus = input.find_first_not_of('+');
+    input.erase(0, posNotPlus);
+
+    if (input.empty())
+    {
+        cout << "Ошибка: ввод не может состоять только из символов '+'" << endl;
+        return false;
+    }
+
+    if (input == "-0" or input == "+0") input = '0';
 
     if (input[0] == ',')
     {
@@ -41,20 +56,21 @@ bool Matrix::correctNumberMatrix(string& input)
         return true;
     }
 
+    if (input.find('-', 1) != string::npos)
+    {
+        cout << "Ошибка: минус может быть только в начале числа" << endl;
+        return false;
+    }
+
+    bool hasDecimal = false;
+
     for (int i = 0; i < input.size(); i++)
     {
         if (isdigit(input[i])) continue;
+       
+        if (input[i] == '-') continue;
 
-        if (input[i] == '-' && i == 0)
-        {
-            continue;
-        }
-        else if (input[i] == '-' && i != 0)
-        {
-            cout << "Ошибка: минус может быть только в начале числа" << endl;
-            return false;
-        }
-        else if (input[i] == ',')
+        if (input[i] == ',')
         {
             if (hasDecimal)
             {
@@ -74,6 +90,11 @@ bool Matrix::correctNumberMatrix(string& input)
 
 bool Matrix::correctNameMatrix(string name)
 {
+    if (name.length() > 8) {
+        cout << "Ошибка: имя матрицы '" << name << "' слишком длинное, имя матрицы не должно превышать 8 символов" << endl;
+        return false;
+    }
+
     regex pattern("^[A-Za-z][A-Za-z0-9]*$");
     return regex_match(name, pattern);
 }
@@ -89,6 +110,10 @@ int Matrix::correctSizeMatrix(const string prompt)
         cout << prompt;
         getline(cin, input);
 
+        transform(input.begin(), input.end(), input.begin(), ::tolower);
+
+        if (input == "back") return -1;
+
         if (input.empty())
         {
             cout << "Ошибка: ввод не может быть пустым" << endl;
@@ -96,10 +121,11 @@ int Matrix::correctSizeMatrix(const string prompt)
             continue;
         }
 
-        if (numeric_limits<double>::max)
+        if (input.length() > 10)
         {
-            //cout << "Ошибка: размер матрицы имеет большой размер" << endl;
-            //return false;
+            cout << "Ошибка: значение '" << input << "' слишком длинное, размер матрицы не должен превышать 10 символов" << endl;
+            validNum = false;
+            continue;
         }
 
         if (input == "0")

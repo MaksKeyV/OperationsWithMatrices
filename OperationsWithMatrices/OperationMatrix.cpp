@@ -27,13 +27,11 @@ vector<vector<double>> Matrix::MatrixSubt(vector<vector<double>>& MatrixFirs, ve
 
 double Matrix::MatrixDeterm(vector<vector<double>>& MatrixFirs)
 {
-	const int sizeMatrix = MatrixFirs.size();
-	
-	if (sizeMatrix == 1) return MatrixFirs[0][0];
+	if (MatrixFirs.size() == 1) return MatrixFirs[0][0];
 
-	else if (sizeMatrix == 2) return ((MatrixFirs[0][0] * MatrixFirs[1][1]) - (MatrixFirs[1][0] * MatrixFirs[0][1]));
+	else if (MatrixFirs.size() == 2) return ((MatrixFirs[0][0] * MatrixFirs[1][1]) - (MatrixFirs[1][0] * MatrixFirs[0][1]));
 
-	else if (sizeMatrix == 3) return ((MatrixFirs[0][0] * MatrixFirs[1][1] * MatrixFirs[2][2]) 
+	else if (MatrixFirs.size() == 3) return ((MatrixFirs[0][0] * MatrixFirs[1][1] * MatrixFirs[2][2])
 		+ (MatrixFirs[0][1] * MatrixFirs[1][2] * MatrixFirs[2][0]) 
 		+ (MatrixFirs[2][1] * MatrixFirs[1][0] * MatrixFirs[0][2]) 
 		- (MatrixFirs[0][2] * MatrixFirs[1][1] * MatrixFirs[2][0]) 
@@ -45,7 +43,7 @@ double Matrix::MatrixDeterm(vector<vector<double>>& MatrixFirs)
 		
 		for (int i = 0; i < MatrixFirs.size(); i++)
 		{
-			vector<vector<double>> minorMatrix(sizeMatrix - 1, vector<double>(sizeMatrix - 1));
+			vector<vector<double>> minorMatrix(MatrixFirs.size() - 1, vector<double>(MatrixFirs.size() - 1));
 
 			for (int j = 1; j < MatrixFirs[0].size(); j++)
 			{
@@ -109,6 +107,8 @@ vector<vector<double>> Matrix::MatrixTranspose(vector<vector<double>>& MatrixFir
 
 double Matrix::MatrixNormMax(vector<vector<double>>& MatrixFirs)
 {
+	if (MatrixFirs.size() == 1) return MatrixFirs[0][0];
+
 	double maxValue = 0;
 
 	for (auto i : MatrixFirs) maxValue = max(maxValue, *max_element(i.begin(), i.end()));

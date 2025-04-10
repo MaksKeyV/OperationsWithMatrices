@@ -11,18 +11,16 @@ void Matrix::executeMatrix(string oper, string firstOperand, string secondOperan
 	if (usersMatrix.count(secondOperand)) MatrixSecond = usersMatrix[secondOperand];
 
 
-	if (all_of(firstOperand.begin(), firstOperand.end(), ::isdigit))
+	if (all_of(firstOperand.begin(), firstOperand.end(), [](char c) { return isdigit(c) or c == ',' or c == '-'; }))
 	{
 		vector<double> singleValueFirst = { stod(firstOperand) };
 		MatrixFirs.push_back(singleValueFirst);
-		singleValueFirst.clear();
 	}
 
-	if (all_of(secondOperand.begin(), secondOperand.end(), ::isdigit))
+	if (all_of(secondOperand.begin(), secondOperand.end(), [](char c) { return isdigit(c) or c == ',' or c == '-'; }))
 	{
 		vector<double> singleValueSecond = { stod(secondOperand) };
 		MatrixSecond.push_back(singleValueSecond);
-		singleValueSecond.clear();
 	}
 
 	if (oper == "+")
@@ -47,12 +45,12 @@ void Matrix::executeMatrix(string oper, string firstOperand, string secondOperan
 
 	else if (oper == "*")
 	{
-		if (all_of(firstOperand.begin(), firstOperand.end(), ::isdigit) and not(all_of(secondOperand.begin(), secondOperand.end(), ::isdigit)))
+		if (all_of(firstOperand.begin(), firstOperand.end(), [](char c) { return isdigit(c) or c == ',' or c == '-'; }) and not(all_of(secondOperand.begin(), secondOperand.end(), [](char c) { return isdigit(c) or c == ',' or c == '-'; })))
 		{
 			MatrixMultiplicationConst(MatrixSecond, stod(firstOperand));
 		}
 
-		else if (not(all_of(firstOperand.begin(), firstOperand.end(), ::isdigit)) and all_of(secondOperand.begin(), secondOperand.end(), ::isdigit))
+		else if (not(all_of(firstOperand.begin(), firstOperand.end(), [](char c) { return isdigit(c) or c == ',' or c == '-'; })) and all_of(secondOperand.begin(), secondOperand.end(), [](char c) { return isdigit(c) or c == ',' or c == '-'; }))
 		{
 			MatrixMultiplicationConst(MatrixFirs, stod(secondOperand));
 		}
@@ -68,9 +66,17 @@ void Matrix::executeMatrix(string oper, string firstOperand, string secondOperan
 
 void Matrix::executeMatrix(string oper, string firstOperand)
 {
-	vector<vector<double>> MatrixFirs = usersMatrix[firstOperand];
+	vector<vector<double>> MatrixFirs;
 
-	if (oper == "D") cout << MatrixDeterm(MatrixFirs);
+	if (all_of(firstOperand.begin(), firstOperand.end(), [](char c) { return isdigit(c) or c == ',' or c == '-'; }))
+	{
+		vector<double> singleValueFirst = { stod(firstOperand) };
+		MatrixFirs.push_back(singleValueFirst);
+	}
+	else MatrixFirs = usersMatrix[firstOperand];
+	
+
+	if (oper == "Det") cout << "Det: " << MatrixDeterm(MatrixFirs);
 
 	if (oper == "T")
 	{
@@ -81,7 +87,7 @@ void Matrix::executeMatrix(string oper, string firstOperand)
 
 	if (oper == "Norm")
 	{
-		cout << "Matrix Norms:" << endl;
+		cout << "Matrix Norms" << endl;
 		cout << "Max Norm: " << MatrixNormMax(MatrixFirs) << endl;
 		cout << "M Norm: " << MatrixNormM(MatrixFirs) << endl;
 		cout << "L Norm: " << MatrixNormL(MatrixFirs) << endl;
@@ -96,7 +102,7 @@ void Matrix::executeMatrix(string oper, string firstOperand)
 		saveResult();
 	}
 
-	if (oper == "Rang") cout << MatrixRang(MatrixFirs) << endl;
+	if (oper == "Rang") cout << "Rang: " << MatrixRang(MatrixFirs) << endl;
 }
 
 bool Matrix::requestSaveResult()
