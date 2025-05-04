@@ -14,83 +14,166 @@
 
 
 using namespace std;
-namespace fs = filesystem;
 
-
+// Класс для матричных операций
 class Matrix
 {
 	public:
+		// Вектор для хранения результата операции над матрицами
 		vector<vector<double>> MatrixResult;
+
+		// Словарь, содержащий пользовательские матрицы
 		map<string, vector<vector<double>>> usersMatrix;
+
+		// Множество допустимых операций над матрицами 
 		const set<string> Operations = { "+", "-", "*", "Det", "T", "Norm", "Inv", "Rang"};
-		int precision = 3;
 		
+		// Точность отображения
+		int precision = 3;
+		 
 
-		vector<vector<double>> MatrixSumm(vector<vector<double>>& MatrixFirs, vector<vector<double>>& MatrixSecond);
 
-		vector<vector<double>> MatrixSubt(vector<vector<double>>& MatrixFirs, vector<vector<double>>& MatrixSecond);
+		// Функция для сложения матриц
+		// MatrixFirst – первая матрица
+		// MatrixSecond – вторая матрица
+		vector<vector<double>> MatrixSumm(vector<vector<double>>& MatrixFirst, vector<vector<double>>& MatrixSecond);
 
-		double MatrixDeterm(vector<vector<double>>& MatrixFirs);
+		// Функция для вычитания матриц
+		// MatrixFirst – первая матрица
+		// MatrixSecond – вторая матрица
+		vector<vector<double>> MatrixSubt(vector<vector<double>>& MatrixFirst, vector<vector<double>>& MatrixSecond);
 
-		vector<vector<double>> MatrixMultiplication(vector<vector<double>>& MatrixFirs, vector<vector<double>>& MatrixSecond);
+		// Функция для вычисления определителя матрицы
+		// MatrixFirst – матрица
+		double MatrixDeterm(vector<vector<double>>& MatrixFirst);
 
-		vector<vector<double>> MatrixMultiplicationConst(vector<vector<double>>& MatrixFirs, double constValue);
+		// Функция для умножения матриц
+		// MatrixFirst – первая матрица
+		// MatrixSecond – вторая матрица
+		vector<vector<double>> MatrixMultiplication(vector<vector<double>>& MatrixFirst, vector<vector<double>>& MatrixSecond);
 
-		vector<vector<double>> MatrixTranspose(vector<vector<double>>& MatrixFirs);
+		// Функция для умножения матрицы на число
+		// MatrixFirst – матрица
+		// constValue – значение константы 
+		vector<vector<double>> MatrixMultiplicationConst(vector<vector<double>>& MatrixFirst, double constValue);
 
-		double MatrixNormMax(vector<vector<double>>& MatrixFirs);
+		// Функция для транспонирования матрицы
+		// MatrixFirst – матрица
+		vector<vector<double>> MatrixTranspose(vector<vector<double>>& MatrixFirst);
 
-		double MatrixNormM(vector<vector<double>>& MatrixFirs);
+		// Функция для вычисления максимальной нормы матрицы
+		// MatrixFirst – матрица
+		double MatrixNormMax(vector<vector<double>>& MatrixFirst);
 
-		double MatrixNormL(vector<vector<double>>& MatrixFirs);
+		// Функция для вычисления нормы строки матрицы (норма M)
+		// MatrixFirst – матрица
+		double MatrixNormM(vector<vector<double>>& MatrixFirst);
 
-		double MatrixNorm(vector<vector<double>>& MatrixFirs);
+		// Функция для вычисления нормы столбца матрицы (норма L)
+		// MatrixFirst – матрица
+		double MatrixNormL(vector<vector<double>>& MatrixFirst);
 
-		vector<vector<double>> MatrixInverse(vector<vector<double>>& MatrixFirs);
+		// Функция для вычисления Евклидовой нормы матрицы
+		// MatrixFirst – матрица
+		double MatrixNorm(vector<vector<double>>& MatrixFirst);
 
-		int MatrixRang(vector<vector<double>>& MatrixFirs);
+		// Функция для вычисления обратной матрицы
+		// MatrixFirst – матрица
+		vector<vector<double>> MatrixInverse(vector<vector<double>>& MatrixFirst);
 
+		// Функция для вычисления ранга матрицы
+		// MatrixFirst – матрица
+		int MatrixRang(vector<vector<double>>& MatrixFirst);
+
+		// Функция для вывода всех пользовательских матриц
 		void outputAllMatrix();
 		
-		void MatrixOut(vector<vector<double>>& MatrixFirs);
 
 
+		// Функция для извлечения матрицы
+		// operand - операнд
+		vector<vector<double>> definitionOperand(string& operand);
 
+		// Функция для выполнения операции над двумя матрицами
+		// oper – операция
+		// first_ – первая матрица
+		// second_ – вторая матрица
 		void executeMatrix(string oper, string first_, string second_);
 
+		// Функция для выполнения операции над одной матрицей
+		// oper – операция
+		// first_ – матрица
 		void executeMatrix(string oper, string first_);
 
+		// Функция для запроса у пользователя сохранения результата операции
 		bool requestSaveResult();
 
+		// Функция для сохранения результата операции
 		void saveResult();
 		
 
 
-		bool checkMatrixExist(string matrixName);
-
-		bool correctNumberMatrix(string& input);
-
-		bool correctNameMatrix(string name);
-
-		int correctSizeMatrix(const string prompt);
-		
-		bool twoOperator(string oper);
-
+		// Функция для вычисления ширины колонок матрицы при форматированном выводе
+		// matrix – матрица
 		vector<int> columnWidths(vector<vector<double>>& matrix);
 
-		void changePrecision();
+		// Функция для вывода одной матрицы
+		// MatrixFirst – матрица
+		void MatrixOut(vector<vector<double>>& MatrixFirst);
+
+		// Функция для округления значения по текущей точности
+		// value – число
+		double roundValue(double value);
+
+		// Функция для применения точности к элементам матрицы
+		// matrix – матрица
+		void applyPrecision(vector<vector<double>>& matrix);
 
 
 
+		// Функция для проверки существования матрицы по имени
+		// matrixName – имя матрицы
+		bool checkMatrixExist(string matrixName);
+
+		// Функция для проверки корректности числового ввода
+		// input – ввод пользователя
+		bool correctNumberMatrix(string& input);
+
+		// Функция для проверки корректности имени матрицы
+		// name – имя матрицы
+		bool correctNameMatrix(string name);
+
+		// Функция для проверки корректности размера матрицы
+		// str – сообщение-подсказка
+		int correctSizeMatrix(const string str);
+		
+		// Функция для проверки, требует ли операция двух операндов
+		// oper – оператор
+		bool twoOperator(string oper);
+
+		
+
+		// Функция для запроса имени матрицы у пользователя
+		// fladOutMsg – флаг, нужно ли выводить сообщение о вводе
 		string inputNameMatrix(bool fladOutMsg);
 
+		// Функция для ввода новой матрицы от пользователя
 		void inputMatrix();
 
+		// Функция для удаления выбранной пользователем матрицы
 		void deleteMatrix();
 
+		// Функция для запроса имени операнда у пользователя
+		// strOperand - строка-подсказка
 		string inputMatrixOperand(string strOperand);
 
+		// Функция для выполнения операций над матрицами по пользовательскому вводу
 		void userCalculateMatrix();
 
+		// Функция для изменения точности вывода чисел
+		void changePrecision();
+
+		// Функция для отображения главного меню программы
 		void menu();
+
 };

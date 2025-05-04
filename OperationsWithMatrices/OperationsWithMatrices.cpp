@@ -1,27 +1,34 @@
-﻿
-#include "Header.h"
+﻿#include "Header.h"
 
+// Функция для запроса имени матрицы у пользователя
+// fladOutMsg – флаг, нужно ли выводить сообщение о вводе
 string Matrix::inputNameMatrix(bool fladOutMsg)
 {
     string matrixName;
 
-    do
+    // Цикл запроса имени, пока оно некорректно
+    do 
     {
         cout << "Существующие пользовательские матрицы" << endl;
+
+        // Выводим список существующих пользовательских матриц
         outputAllMatrix();
 
+        // Если флаг fladOutMsg установлен в true, выводим сообщение о вводе
         if (fladOutMsg) 
         {
             cout << "Введите название матрицы или команду 'back', чтобы вернуться в меню" << endl;
-            cout << "Если введенное имя уже существует, оно будет перезаписано" << endl;
+            cout << "Если введенное имя матрицы уже существует, матрица будет перезаписана" << endl;
         }
 
         cout << "Имя должно начинаться с латинской буквы и может содержать цифры" << endl;
         cout << "Введите имя матрицы: ";
         getline(cin, matrixName);
 
+        // Перевод в нижний регистр
         transform(matrixName.begin(), matrixName.end(), matrixName.begin(), ::tolower);
 
+        // Проверка, соответствует ли имя матрицы корректному формату
         if (not correctNameMatrix(matrixName))
         {
             system("cls");
@@ -32,8 +39,10 @@ string Matrix::inputNameMatrix(bool fladOutMsg)
     return matrixName;
 }
 
+// Функция для ввода новой матрицы от пользователя
 void Matrix::inputMatrix()
 {
+    // Запрашиваем имя матрицы
     string matrixName = inputNameMatrix(true);
 
     if (matrixName == "back")
@@ -42,6 +51,7 @@ void Matrix::inputMatrix()
         return;
     }
 
+    // Запрашиваем количество строк для матрицы
     int row = correctSizeMatrix("Введите количество строк: ");
 
     if (row == -1)
@@ -50,6 +60,7 @@ void Matrix::inputMatrix()
         return;
     }
 
+    // Запрашиваем количество столбцов для матрицы
     int collum = correctSizeMatrix("Введите количество столбцов: ");
 
     if (collum == -1)
@@ -58,20 +69,27 @@ void Matrix::inputMatrix()
         return;
     }
 
+    // Создаем матрицу заданных размеров
     vector<vector<double>> matrix(row, vector<double>(collum));
 
+    // Проход по строкам матрицы
     for (int i = 0; i < row; i++)
     {
+        // Проход по столбцам матрицы
         for (int j = 0; j < collum; j++)
         {
             string input;
+
+            // Флаг для проверки корректности ввода
             bool validInput = false;
 
+            // Цикл, пока не введено корректное число
             while (!validInput)
             {
                 cout << "Введите " << matrixName << "[" << i + 1 << "][" << j + 1 << "]: ";
                 getline(cin, input);
 
+                // Перевод в нижний регистр
                 transform(input.begin(), input.end(), input.begin(), ::tolower);
 
                 if (input == "back")
@@ -80,6 +98,7 @@ void Matrix::inputMatrix()
                     return;
                 }
 
+                // Проверка, является ли введенное значение корректным числом
                 if (correctNumberMatrix(input))
                 {
                     matrix[i][j] = stod(input);
@@ -94,66 +113,86 @@ void Matrix::inputMatrix()
         }
     }
 
+    // Применение точности ко всем элементам матрицы
+    applyPrecision(matrix);
+
     usersMatrix[matrixName] = matrix;
 
-  
     system("cls");
 
+    // Проверка, существует ли уже матрица с таким именем
     if (checkMatrixExist(matrixName)) cout << "Матрица с именем '" << matrixName << "' перезаписана" << endl;
 
     cout << "Введенная матрица '" << matrixName << "':" << endl;
+
+    // Вывод матрицы
     MatrixOut(matrix);
     cout << endl;
 }
 
+// Функция для удаления выбранной пользователем матрицы
 void Matrix::deleteMatrix()
 {
+    // Проверяем, есть ли сохраненные матрицы
     if (usersMatrix.empty())
     {
         cout << "Нет сохраненных матриц" << endl << endl;
         return;
     }
 
-    cout << "Существующие пользовательские матрицы" << endl;
-    outputAllMatrix();
+    cout << "Введите название матрицы или команду 'back', чтобы вернуться в меню" << endl << endl;
 
-    string matrixName = inputNameMatrix(true);
+    // Запрашиваем имя матрицы
+    string matrixName = inputNameMatrix(false);
 
     system("cls");
 
     if (matrixName == "back") return;
 
+    // Проверка, существует ли уже матрица с таким именем
     if (checkMatrixExist(matrixName))
     {
+        // Удаляем матрицу
         usersMatrix.erase(matrixName);
         cout << "Матрица '" << matrixName << "' была удалена" << endl << endl;
     }
     else  cout << "Ошибка: матрица с именем '" << matrixName << "' не найдена" << endl << endl;
 }
 
+// Функция для запроса имени операнда у пользователя
+// strOperand - строка-подсказка
 string Matrix::inputMatrixOperand(string strOperand)
 {
     string matrixName;
 
+    // Флаг для проверки корректности ввода
     bool correctInput = true;
 
+    // Цикл, пока не будет корректный ввод
     do
     {
         cout << strOperand << ": ";
         getline(cin, matrixName);
 
+        // Перевод в нижний регистр
         transform(matrixName.begin(), matrixName.end(), matrixName.begin(), ::tolower);
 
         if (matrixName == "back") return "back";
 
+        // Проверка, состоит ли имя из цифр, точки, запятой или минуса
         if (all_of(matrixName.begin(), matrixName.end(), [](char c) { return isdigit(c) or c == '.' or c == ',' or c == '-'; }))
         {
+            // Проверка, является ли введенное значение корректным числом
             if (correctNumberMatrix(matrixName)) return matrixName;
             correctInput = false;
         }
+        // Проверка, состоит ли имя из букв и цифр
         else if (all_of(matrixName.begin(), matrixName.end(), ::isalnum))
         {
+            // Проверка, соответствует ли имя матрицы корректному формату
             if (not correctNameMatrix(matrixName)) correctInput = false;
+
+            // Проверка, существует ли уже матрица с таким именем
             else if (checkMatrixExist(matrixName)) return matrixName;
             else  cout << "Ошибка: матрица с именем '" << matrixName << "' не найдена" << endl << endl;
             correctInput = false;
@@ -166,11 +205,13 @@ string Matrix::inputMatrixOperand(string strOperand)
     } while (not correctInput);
 
     return "back";
-}
+} 
 
+// Функция для выполнения операций над матрицами по пользовательскому вводу
 void Matrix::userCalculateMatrix()
 {
     cout << "Существующие пользовательские матрицы" << endl;
+    // Вывод всех сохраненных матриц
     outputAllMatrix();
 
     cout << "Поддерживаемые операции:" << endl
@@ -180,8 +221,8 @@ void Matrix::userCalculateMatrix()
         << "Детерминант матрицы \"Det\"" << endl
         << "Транспонирование матрицы \"T\"" << endl
         << "Норма матрицы \"Norm\"" << endl
-        << "Норма матрицы \"Inv\"" << endl
-        << "Норма матрицы \"Rang\"" << endl
+        << "Обратная матрица \"Inv\"" << endl
+        << "Ранг матрицы \"Rang\"" << endl
         << "Вернуться в меню \"back\"" << endl << endl;
 
     cout << "Введите оператор: ";
@@ -200,6 +241,7 @@ void Matrix::userCalculateMatrix()
         return;
     }
 
+    // Проверка на существование операции
     if (Operations.count(oper) == 0)
     {
         system("cls");
@@ -207,6 +249,7 @@ void Matrix::userCalculateMatrix()
         return;
     }
 
+    // Запрашиваем первый операнд
     string firstMatrix = inputMatrixOperand("Введите первый операнд");
 
     if (firstMatrix == "back")
@@ -215,11 +258,14 @@ void Matrix::userCalculateMatrix()
         return;
     }
 
+    // Формируем строку выражения с первым операндом
     string expr = "'" + oper + "' " + firstMatrix;
     string secondMatrix;
 
+    // Проверка на необходимость второго операнда
     if (twoOperator(oper))
     {
+        // Запрашиваем второй операнд
         secondMatrix = inputMatrixOperand("Введите второй операнд");
 
         if (secondMatrix == "back")
@@ -227,6 +273,7 @@ void Matrix::userCalculateMatrix()
             system("cls");
             return;
         }
+        // Формируем выражение с двумя операндами
         expr = firstMatrix + " '" + oper + "' " + secondMatrix;
     }
 
@@ -235,22 +282,28 @@ void Matrix::userCalculateMatrix()
         system("cls");
         cout << "Входная строка: " << expr << endl << endl;
 
+        // Проверка на необходимость второго операнда
         if (twoOperator(oper))
         {
+            // Выполнение операции над двумя матрицами
             executeMatrix(oper, firstMatrix, secondMatrix);
         }
         else
         {
+            // Выполнение операции над одной матрицей
             executeMatrix(oper, firstMatrix);
         }
         cout << endl << endl;
     }
     catch (string err)
     {
+        // Вывод ошибок выполнения
         cout << err << endl << endl;
     }
 }
 
+// Функция для применения точности к элементам матрицы
+// matrix – матрица
 void Matrix::changePrecision()
 {
     cout << "Введите требуемое количество знаков после запятой в виде неотрицательного целого числа меньше 4" << endl;
@@ -261,6 +314,7 @@ void Matrix::changePrecision()
 
     getline(cin, input);
 
+    // Проверка, что ввод содержит только цифры
     if (input.find_first_not_of("1234567890") == -1)
     {
         if (input.empty())
@@ -273,14 +327,19 @@ void Matrix::changePrecision()
 
         if (number >= 0 and number <= 3)
         {
+            // Установка точности
             precision = number;
             cout << endl << endl;
         }
         else cout << "Неправильный ввод, требуется число меньше 4" << endl << endl;
     }
     else cout << "Неправильный ввод, требуется неотрицательное целое число" << endl << endl;
+
+    // Применение точности ко всем матрицам
+    if (not usersMatrix.empty()) for (auto& i : usersMatrix) applyPrecision(i.second);
 }
 
+// Функция для отображения главного меню программы
 void Matrix::menu()
 {
     int command = 0;
@@ -296,28 +355,35 @@ void Matrix::menu()
             << "6 - Ввод точности вывода, текущая: " << precision << endl
             << "0 - Завершение работы" << endl << endl;
 
+        // Получаем пункт от пользователя
         command = _getch();
         system("cls");
 
         switch (command)
         {
         case '1':
+            // Создать и добавить матрицу
             inputMatrix();
             break;
         case '2':
+            // Вывод всех сохраненных матриц
             cout << "Существующие пользовательские матрицы" << endl;
             outputAllMatrix();
             break;
         case '3':
+            // Удалить матрицу
             deleteMatrix();
             break;
         case '4':
+            // Очистить консоль
             system("cls");
             break;
         case '5':
+            // Ввод выражения для вычислений
             userCalculateMatrix();
             break;
         case '6':
+            // Изменение точности
             changePrecision();
             break;
         case '0':
@@ -335,5 +401,6 @@ int main()
     
     Matrix matrix;
     
+    // Запускаем главное меню программы
     matrix.menu();
-}
+}       

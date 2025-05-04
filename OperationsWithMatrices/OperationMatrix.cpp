@@ -1,266 +1,348 @@
-#include "Header.h"
+﻿#include "Header.h"
 
-
-vector<vector<double>> Matrix::MatrixSumm(vector<vector<double>>& MatrixFirs, vector<vector<double>>& MatrixSecond)
+// Функция для сложения матриц
+// MatrixFirst – первая матрица
+// MatrixSecond – вторая матрица
+vector<vector<double>> Matrix::MatrixSumm(vector<vector<double>>& MatrixFirst, vector<vector<double>>& MatrixSecond)
 {
-	MatrixResult = vector<vector<double>>(MatrixFirs.size(), vector<double>(MatrixFirs[0].size()));
+	// Результирующая матрица
+	MatrixResult = vector<vector<double>>(MatrixFirst.size(), vector<double>(MatrixFirst[0].size()));
 
-	for (int i = 0; i < MatrixFirs.size(); i++)
-		for (int j = 0; j < MatrixFirs[0].size(); j++)
-			MatrixResult[i][j] = MatrixFirs[i][j] + MatrixSecond[i][j];
+	// Проход по всем элементам матриц построчно и по столбцам
+	for (int i = 0; i < MatrixFirst.size(); i++)
+		for (int j = 0; j < MatrixFirst[0].size(); j++)
+			MatrixResult[i][j] = MatrixFirst[i][j] + MatrixSecond[i][j];
 		
 	return MatrixResult;
 }
 
-vector<vector<double>> Matrix::MatrixSubt(vector<vector<double>>& MatrixFirs, vector<vector<double>>& MatrixSecond)
+// Функция для вычитания матриц
+// MatrixFirst – первая матрица
+// MatrixSecond – вторая матрица
+vector<vector<double>> Matrix::MatrixSubt(vector<vector<double>>& MatrixFirst, vector<vector<double>>& MatrixSecond)
 {
-	MatrixResult = vector<vector<double>>(MatrixFirs.size(), vector<double>(MatrixFirs[0].size()));
+	// Результирующая матрица
+	MatrixResult = vector<vector<double>>(MatrixFirst.size(), vector<double>(MatrixFirst[0].size()));
 
-	for (int i = 0; i < MatrixFirs.size(); i++)
-		for (int j = 0; j < MatrixFirs[0].size(); j++)
-			MatrixResult[i][j] = MatrixFirs[i][j] - MatrixSecond[i][j];
-		
-	
+	// Проход по всем элементам матриц построчно и по столбцам
+	for (int i = 0; i < MatrixFirst.size(); i++)
+		for (int j = 0; j < MatrixFirst[0].size(); j++)
+			MatrixResult[i][j] = MatrixFirst[i][j] - MatrixSecond[i][j];
 
 	return MatrixResult;
 }
 
-double Matrix::MatrixDeterm(vector<vector<double>>& MatrixFirs)
+// Функция для вычисления определителя матрицы
+// MatrixFirst – матрица
+double Matrix::MatrixDeterm(vector<vector<double>>& MatrixFirst)
 {
-	if (MatrixFirs.size() == 1) return MatrixFirs[0][0];
+	// Если матрица 1×1, определитель — единственный элемент
+	if (MatrixFirst.size() == 1) return MatrixFirst[0][0];
 
-	else if (MatrixFirs.size() == 2) return ((MatrixFirs[0][0] * MatrixFirs[1][1]) - (MatrixFirs[1][0] * MatrixFirs[0][1]));
+	// Если матрица 2×2, используем формулу для нахождения определителя
+	else if (MatrixFirst.size() == 2) return ((MatrixFirst[0][0] * MatrixFirst[1][1]) - (MatrixFirst[1][0] * MatrixFirst[0][1]));
 
-	else if (MatrixFirs.size() == 3) return ((MatrixFirs[0][0] * MatrixFirs[1][1] * MatrixFirs[2][2])
-		+ (MatrixFirs[0][1] * MatrixFirs[1][2] * MatrixFirs[2][0]) 
-		+ (MatrixFirs[2][1] * MatrixFirs[1][0] * MatrixFirs[0][2]) 
-		- (MatrixFirs[0][2] * MatrixFirs[1][1] * MatrixFirs[2][0]) 
-		- (MatrixFirs[0][0] * MatrixFirs[1][2] * MatrixFirs[2][1]) 
-		- (MatrixFirs[0][1] * MatrixFirs[1][0] * MatrixFirs[2][2]));
+	// Если матрица 3×3, используем формулу для нахождения определителя
+	else if (MatrixFirst.size() == 3) return ((MatrixFirst[0][0] * MatrixFirst[1][1] * MatrixFirst[2][2])
+		+ (MatrixFirst[0][1] * MatrixFirst[1][2] * MatrixFirst[2][0]) 
+		+ (MatrixFirst[2][1] * MatrixFirst[1][0] * MatrixFirst[0][2]) 
+		- (MatrixFirst[0][2] * MatrixFirst[1][1] * MatrixFirst[2][0]) 
+		- (MatrixFirst[0][0] * MatrixFirst[1][2] * MatrixFirst[2][1]) 
+		- (MatrixFirst[0][1] * MatrixFirst[1][0] * MatrixFirst[2][2]));
 	else
 	{
 		double DetermResult = 0;
 		
-		for (int i = 0; i < MatrixFirs.size(); i++)
+		for (int i = 0; i < MatrixFirst.size(); i++)
 		{
-			vector<vector<double>> minorMatrix(MatrixFirs.size() - 1, vector<double>(MatrixFirs.size() - 1));
+			// Формируем минор матрицы
+			vector<vector<double>> minorMatrix(MatrixFirst.size() - 1, vector<double>(MatrixFirst.size() - 1));
 
-			for (int j = 1; j < MatrixFirs[0].size(); j++)
+			// Проход по строкам, начиная со второй
+			for (int j = 1; j < MatrixFirst.size(); j++)
 			{
 				int collumIndex = 0;
-				for (int collum = 0; collum < MatrixFirs.size(); collum++)
+				for (int collum = 0; collum < MatrixFirst.size(); collum++)
 				{
+					// Пропускаем текущий столбец
 					if (collum == i) continue;
 
-					minorMatrix[j - 1][collumIndex] = MatrixFirs[j][collum];
+					// Заполняем минор соответствующими элементами
+					minorMatrix[j - 1][collumIndex] = MatrixFirst[j][collum];
 					collumIndex++;
-
 				}
 			}
-			DetermResult += (i % 2 == 0 ? 1 : (-1)) * MatrixFirs[0][i] * MatrixDeterm(minorMatrix);
+			// Вычисляем определитель по формуле Лапласа
+			DetermResult += (i % 2 == 0 ? 1 : (-1)) * MatrixFirst[0][i] * MatrixDeterm(minorMatrix);
 		}
-
 		return DetermResult;
 	}
 }
 
-vector<vector<double>> Matrix::MatrixMultiplication(vector<vector<double>>& MatrixFirs, vector<vector<double>>& MatrixSecond)
+// Функция для умножения матриц
+// MatrixFirst – первая матрица
+// MatrixSecond – вторая матрица
+vector<vector<double>> Matrix::MatrixMultiplication(vector<vector<double>>& MatrixFirst, vector<vector<double>>& MatrixSecond)
 {
-	MatrixResult = vector<vector<double>>(MatrixFirs.size(), vector<double>(MatrixSecond[0].size()));
+	// Результирующая матрица
+	MatrixResult = vector<vector<double>>(MatrixFirst.size(), vector<double>(MatrixSecond[0].size()));
 
-	for (int i = 0; i < MatrixFirs.size(); i++)
+	// Проход по строкам первой матрицы
+	for (int i = 0; i < MatrixFirst.size(); i++)
 	{
+		// Проход по столбцам второй матрицы
 		for (int j = 0; j < MatrixSecond[0].size(); j++)
 		{
 			MatrixResult[i][j] = 0;
+			// Складываем произведения соответствующих элементов строки и столбца
 			for (int k = 0; k < MatrixSecond.size(); k++)
-			{
-				MatrixResult[i][j] += MatrixFirs[i][k] * MatrixSecond[k][j];
-			}
+				MatrixResult[i][j] += MatrixFirst[i][k] * MatrixSecond[k][j];
 		}
 	}
+	return MatrixResult;
+}
+
+// Функция для умножения матрицы на число
+// MatrixFirst – матрица
+// constValue – значение константы 
+vector<vector<double>> Matrix::MatrixMultiplicationConst(vector<vector<double>>& MatrixFirst, double constValue)
+{
+	// Результирующая матрица
+	MatrixResult = vector<vector<double>>(MatrixFirst.size(), vector<double>(MatrixFirst[0].size()));
+
+	// Проход по всем элементам матриц построчно и по столбцам, умножая на константу
+	for (int i = 0; i < MatrixFirst.size(); i++)
+		for (int j = 0; j < MatrixFirst[0].size(); j++)
+			MatrixResult[i][j] = MatrixFirst[i][j] * constValue;
 
 	return MatrixResult;
 }
 
-vector<vector<double>> Matrix::MatrixMultiplicationConst(vector<vector<double>>& MatrixFirs, double constValue)
+// Функция для транспонирования матрицы
+// MatrixFirst – матрица
+vector<vector<double>> Matrix::MatrixTranspose(vector<vector<double>>& MatrixFirst)
 {
-	MatrixResult = vector<vector<double>>(MatrixFirs.size(), vector<double>(MatrixFirs[0].size()));
+	// Результирующая матрица
+	MatrixResult = vector<vector<double>>(MatrixFirst[0].size(), vector<double>(MatrixFirst.size()));
 
-	for (int i = 0; i < MatrixFirs.size(); i++)
-		for (int j = 0; j < MatrixFirs[0].size(); j++)
-			MatrixResult[i][j] = MatrixFirs[i][j] * constValue;
-
-	return MatrixResult;
-}
-
-vector<vector<double>> Matrix::MatrixTranspose(vector<vector<double>>& MatrixFirs)
-{
-	MatrixResult = vector<vector<double>>(MatrixFirs[0].size(), vector<double>(MatrixFirs.size()));
-
-	for (int i = 0; i < MatrixFirs.size(); i++)
-		for (int j = 0; j < MatrixFirs[0].size(); j++)
-			MatrixResult[j][i] = MatrixFirs[i][j];
+	// Проход по всем элементам матриц построчно и по столбцам
+	for (int i = 0; i < MatrixFirst.size(); i++)
+		for (int j = 0; j < MatrixFirst[0].size(); j++)
+			MatrixResult[j][i] = MatrixFirst[i][j];
 		
 	return MatrixResult;
 }
 
-double Matrix::MatrixNormMax(vector<vector<double>>& MatrixFirs)
+// Функция для вычисления максимальной нормы матрицы
+// MatrixFirst – матрица
+double Matrix::MatrixNormMax(vector<vector<double>>& MatrixFirst)
 {
-	if (MatrixFirs.size() == 1) return MatrixFirs[0][0];
+	// Если матрица 1x1, то возвращаем единственный элемент
+	if (MatrixFirst.size() == 1) return MatrixFirst[0][0];
 
 	double maxValue = 0;
 
-	for (auto i : MatrixFirs) maxValue = max(maxValue, *max_element(i.begin(), i.end()));
+	// Проход по всем строкам матрицы и находим максимальный элемент
+	for (int i = 0; i < MatrixFirst.size(); i++) 
+		maxValue = max(maxValue, *max_element(MatrixFirst[i].begin(), MatrixFirst[i].end()));
 
 	return maxValue;
 }
 
-double Matrix::MatrixNormM(vector<vector<double>>& MatrixFirs)
+// Функция для вычисления нормы строки матрицы (норма M)
+// MatrixFirst – матрица
+double Matrix::MatrixNormM(vector<vector<double>>& MatrixFirst)
 {
 	double maxValueNorm = 0;
 
-	for (int i = 0; i < MatrixFirs.size(); i++)
+	// Проход по строкам матрицы
+	for (int i = 0; i < MatrixFirst.size(); i++)
 	{
 		double valueNorm = 0;
-		for (int j = 0; j < MatrixFirs[0].size(); j++)
-			valueNorm += abs(MatrixFirs[i][j]);
+
+		// Проход по столбцам матрицы
+		for (int j = 0; j < MatrixFirst[0].size(); j++)
+			// Суммируем абсолютные значения элементов строки
+			valueNorm += abs(MatrixFirst[i][j]);
+		// Находим максимальную норму строк
+		maxValueNorm = max(maxValueNorm, valueNorm);
+	}
+	return maxValueNorm;
+}
+
+// Функция для вычисления нормы столбца матрицы (норма L)
+// MatrixFirst – матрица
+double Matrix::MatrixNormL(vector<vector<double>>& MatrixFirst)
+{
+	double maxValueNorm = 0;
+
+	// Проход по столбцам матрицы
+	for (int i = 0; i < MatrixFirst[0].size(); i++)
+	{
+		double valueNorm = 0;
+
+		// Проход по строкам матрицы
+		for (int j = 0; j < MatrixFirst.size(); j++)
+			// Суммируем абсолютные значения элементов столбца
+			valueNorm += abs(MatrixFirst[j][i]);
+		// Находим максимальную норму столбцов
 		maxValueNorm = max(maxValueNorm, valueNorm);
 	}
 
 	return maxValueNorm;
 }
 
-double Matrix::MatrixNormL(vector<vector<double>>& MatrixFirs)
-{
-	double maxValueNorm = 0;
-
-	for (int i = 0; i < MatrixFirs[0].size(); i++)
-	{
-		double valueNorm = 0;
-		for (int j = 0; j < MatrixFirs.size(); j++)
-			valueNorm += abs(MatrixFirs[j][i]);
-		maxValueNorm = max(maxValueNorm, valueNorm);
-	}
-
-	return maxValueNorm;
-}
-
-double Matrix::MatrixNorm(vector<vector<double>>& MatrixFirs)
+// Функция для вычисления Евклидовой нормы матрицы
+// MatrixFirst – матрица
+double Matrix::MatrixNorm(vector<vector<double>>& MatrixFirst)
 {
 	double sumValueNorm = 0;
 
-	for (int i = 0; i < MatrixFirs.size(); i++)
-		for (int j = 0; j < MatrixFirs[i].size(); j++)
-			sumValueNorm += pow(MatrixFirs[i][j], 2);
+	// Проход по всем элементам матриц построчно и по столбцам, суммируем их квадраты
+	for (int i = 0; i < MatrixFirst.size(); i++)
+		for (int j = 0; j < MatrixFirst[0].size(); j++)
+			sumValueNorm += pow(MatrixFirst[i][j], 2);
 
+	// Возвращаем квадратный корень из суммы квадратов
 	return sqrt(sumValueNorm);
 }
 
-vector<vector<double>> Matrix::MatrixInverse(vector<vector<double>>& MatrixFirs)
+// Функция для вычисления обратной матрицы
+// MatrixFirst – матрица
+vector<vector<double>> Matrix::MatrixInverse(vector<vector<double>>& MatrixFirst)
 {
-	double determ = MatrixDeterm(MatrixFirs);
-	if (determ == 0) throw string("������� �� ��������, ������������ ����� 0");
+	double determ = MatrixDeterm(MatrixFirst);
 
-	MatrixResult = vector<vector<double>>(MatrixFirs.size(), vector<double>(MatrixFirs[0].size()));
-	int sizeMatrix = MatrixFirs.size();
+	// Если определитель равен 0 — матрица необратима
+	if (determ == 0) throw string("Матрица не обратима, определитель равен 0");
 
-	if (sizeMatrix == 1)
+	// Результирующая матрица
+	MatrixResult = vector<vector<double>>(MatrixFirst.size(), vector<double>(MatrixFirst.size()));
+	
+	// Обратная к матрице 1×1 — это 1/элемент
+	if (MatrixFirst.size() == 1)
 	{
-		MatrixResult[0][0] = 1.0 / (MatrixFirs[0][0]);
+		MatrixResult[0][0] = 1.0 / (MatrixFirst[0][0]);
 		return MatrixResult;
 	}
 
-	vector<vector<double>> matrix = vector<vector<double>>(MatrixFirs.size(), vector<double>(MatrixFirs[0].size()));
+	// Матрица для алгебраических дополнений
+	vector<vector<double>> matrix = vector<vector<double>>(MatrixFirst.size(), vector<double>(MatrixFirst.size()));
 
-	for (int i = 0; i < MatrixFirs.size(); i++)
+	// Проход по всем элементам матриц построчно и по столбцам
+	for (int i = 0; i < MatrixFirst.size(); i++)
 	{
-		for (int j = 0; j < MatrixFirs[0].size(); j++)
+		for (int j = 0; j < MatrixFirst[0].size(); j++)
 		{
-			vector<vector<double>> minorMatrix(sizeMatrix - 1, vector<double>(sizeMatrix - 1));
+			// Формируем минор матрицы
+			vector<vector<double>> minorMatrix(MatrixFirst.size() - 1, vector<double>(MatrixFirst.size() - 1));
 			
 			int collumIndex = 0;
 
-			for (int collum = 0; collum < MatrixFirs.size(); collum++)
+			for (int collum = 0; collum < MatrixFirst.size(); collum++)
 			{
+				// Пропускаем текущий столбец
 				if (collum == j) continue;
 				int rowIndex = 0;
 
-				for (int row = 0; row < MatrixFirs.size(); row++)
+				for (int row = 0; row < MatrixFirst.size(); row++)
 				{
+					// Пропускаем текущую строку
 					if (row == i) continue;
 
-					minorMatrix[rowIndex][collumIndex] = MatrixFirs[row][collum];
+					minorMatrix[rowIndex][collumIndex] = MatrixFirst[row][collum];
 					rowIndex++;
 				}
 				collumIndex++;
 			}
+			// Вычисляем определитель по формуле Лапласа
 			matrix[i][j] += ((i + j) % 2 == 0 ? 1 : (-1)) * MatrixDeterm(minorMatrix);
 		}
 	}
 
+	// Транспонируем матрицу
 	matrix = MatrixTranspose(matrix);
 
+	// Делим матрицу на определитель — получаем обратную матрицу
 	return MatrixResult = MatrixMultiplicationConst(matrix, (1.0 / determ));
 }
 
-int Matrix::MatrixRang(vector<vector<double>>& MatrixFirs) 
+// Функция для вычисления ранга матрицы
+// MatrixFirst – матрица
+int Matrix::MatrixRang(vector<vector<double>>& MatrixFirst) 
 {
-	int rank = MatrixFirs[0].size();;
+	// Изначально ранг равен количеству столбцов
+	int rank = MatrixFirst[0].size();
 
+	// Проход по строкам матрицы
 	for (int row = 0; row < rank; row++) 
 	{
-		if (MatrixFirs[row][row] != 0) 
+		// Проверяем, не нулевой ли диагональный элемент
+		if (MatrixFirst[row][row] != 0) 
 		{
-			for (int collum = 0; collum < MatrixFirs.size(); collum++)
+			// Цикл для обнуления текущего столбца во всех строках, кроме текущей
+			for (int collum = 0; collum < MatrixFirst.size(); collum++)
 			{
 				if (collum != row)
 				{
-					double mult = MatrixFirs[collum][row] / MatrixFirs[row][row];
+					// Множитель для вычитания строки
+					double mult = MatrixFirst[collum][row] / MatrixFirst[row][row];
 
 					for (int i = 0; i < rank; i++) 
-						MatrixFirs[collum][i] -= mult * MatrixFirs[row][i];
+						MatrixFirst[collum][i] -= mult * MatrixFirst[row][i];
 				}
 			}
 		}
 		else 
 		{
+			// Флаг, нужно ли уменьшать ранг
 			bool reduce = true;
 			
-			for (int i = row + 1; i < MatrixFirs.size(); i++)
+			for (int i = row + 1; i < MatrixFirst.size(); i++)
 			{
-				if (MatrixFirs[i][row] != 0) 
+				// Если нашли строку с ненулевым элементом, меняем строки местами
+				if (MatrixFirst[i][row] != 0) 
 				{
-					swap(MatrixFirs[row], MatrixFirs[i]);
+					swap(MatrixFirst[row], MatrixFirst[i]);
 					reduce = false;
 					break;
 				}
 			}
 			
+			// Если не нашли строку с ненулевым элементом в столбце
 			if (reduce) 
 			{
+				// Уменьшаем ранг
 				rank--;
-				for (int i = 0; i < MatrixFirs.size(); i++)
-					MatrixFirs[i][row] = MatrixFirs[i][rank];
+
+				// Перемещаем последний столбец на место текущего
+				for (int i = 0; i < MatrixFirst.size(); i++)
+					MatrixFirst[i][row] = MatrixFirst[i][rank];
 			}
+
+			// Уменьшаем индекс строки
 			row--;
 		}
 	}
 	return rank;
 }
 
+// Функция для вывода всех пользовательских матриц
 void Matrix::outputAllMatrix()
 {
+	// Если список пользовательских матриц пуст
 	if (usersMatrix.empty())
 	{
-		cout << "��� ����������� ������" << endl << endl;
+		cout << "Нет сохраненных матриц" << endl << endl;
 		return;
 	}
 
+	// Перебираем все сохранённые матрицы
 	for (auto i : usersMatrix)
 	{
-		cout << "������� '" << i.first << "':" << endl;
+		cout << "Матрица '" << i.first << "':" << endl;
 
+		// Вывод матрицы
 		MatrixOut(i.second); 
 		cout << endl;
 	}
