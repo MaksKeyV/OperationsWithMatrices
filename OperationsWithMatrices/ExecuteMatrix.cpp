@@ -1,83 +1,64 @@
 #include "Header.h"
 
-// Функция для извлечения матрицы
-// operand - операнд
-vector<vector<double>> Matrix::definitionOperand(string& operand)
+// Преобразование строки в объект MathMatrix (по имени матрицы или числу)
+// input – строка, представляющая имя матрицы или число
+MathMatrix Matrix::OperandToMatrix(string operand) 
 {
-	// Матрица-результат
-	vector<vector<double>> result;
-
 	// Если операнд — имя ранее сохранённой матрицы
-	if (usersMatrix.count(operand)) return usersMatrix[operand];
+	if (usersMatrix.count(operand)) return MathMatrix(usersMatrix[operand]);
 
 	// Если операнд — число 
-	if (all_of(operand.begin(), operand.end(), [](char c) { return isdigit(c) or c == ',' or c == '-'; }))
-	{
-		// Вектор для хранения числа
-		vector<double> singleValue = { stod(operand) };
-		result.push_back(singleValue);
-	}
+	if (all_of(operand.begin(), operand.end(), [](char c) { return isdigit(c) || c == ',' || c == '.' || c == '-'; })) return MathMatrix({ { stod(operand) } });
 
-	return result;
+	throw string("Ошибка: не удалось распознать операнд '" + operand + "'");
 }
 
 // Функция для выполнения операции над двумя матрицами
 // oper – операция
 // first_ – первая матрица
 // second_ – вторая матрица
-void Matrix::executeMatrix(string oper, string firstOperand, string secondOperand)
+void Matrix::executeMatrix(string oper, string firstOperand, string secondOperand) 
 {
 	// Извлекаем первую матрицу
-	vector<vector<double>> MatrixFirs = definitionOperand(firstOperand);
+	MathMatrix firstMatrix = OperandToMatrix(firstOperand);
 
 	// Извлекаем вторую матрицу
-	vector<vector<double>> MatrixSecond = definitionOperand(secondOperand);
+	MathMatrix secondMatrix = OperandToMatrix(secondOperand);
 
-	if (oper == "+")
+	// Переменная для хранения результата операции
+	MathMatrix operationResult;
+
+	// Сложение матриц
+	if (oper == "+") operationResult = firstMatrix + secondMatrix;
+
+	// Вычитание матриц
+	else if (oper == "-") operationResult = firstMatrix - secondMatrix;
+
+
+	else if (oper == "*") 
 	{
-		if (MatrixFirs.size() != MatrixSecond.size() or MatrixFirs[0].size() != MatrixSecond[0].size())
-		{
-			throw string("Ошибка: размеры матриц не совпадают для сложения");
-		}
+		// Проверка: является ли левый операнд скаляром
+		bool firstIsNumber = firstMatrix.matrixData.size() == 1 and firstMatrix.matrixData[0].size() == 1;
 
-		// Вызываем функцию сложения матриц
-		MatrixSumm(MatrixFirs, MatrixSecond);
+		// Проверка: является ли правый операнд скаляром
+		bool secondIsNumber = secondMatrix.matrixData.size() == 1 and secondMatrix.matrixData[0].size() == 1;
+
+		// Число * матрица
+		if (firstIsNumber and not secondIsNumber) operationResult = secondMatrix * firstMatrix.matrixData[0][0];
+
+		// Матрица * число
+		else if (not firstIsNumber and secondIsNumber) operationResult = firstMatrix * secondMatrix.matrixData[0][0];
+
+		// Матрица * матрица
+		else operationResult = firstMatrix * secondMatrix;
 	}
+	else throw string("Операция не поддерживается");
 
-	else if (oper == "-")
-	{
-		if (MatrixFirs.size() != MatrixSecond.size() or MatrixFirs[0].size() != MatrixSecond[0].size())
-		{
-			throw string("Ошибка: размеры матриц не совпадают для вычитания");
-		}
-
-		// Вызываем функцию вычитания матриц
-		MatrixSubt(MatrixFirs, MatrixSecond);
-	}
-
-	else if (oper == "*")
-	{
-		if (all_of(firstOperand.begin(), firstOperand.end(), [](char c) { return isdigit(c) or c == ',' or c == '-'; }) and not(all_of(secondOperand.begin(), secondOperand.end(), [](char c) { return isdigit(c) or c == ',' or c == '-'; })))
-		{
-			// Умножение числа на матрицу (число в первом операнде)
-			MatrixMultiplicationConst(MatrixSecond, stod(firstOperand));
-		}
-
-		else if (not(all_of(firstOperand.begin(), firstOperand.end(), [](char c) { return isdigit(c) or c == ',' or c == '-'; })) and all_of(secondOperand.begin(), secondOperand.end(), [](char c) { return isdigit(c) or c == ',' or c == '-'; }))
-		{
-			// Умножение матрицы на число (число во втором операнде)
-			MatrixMultiplicationConst(MatrixFirs, stod(secondOperand));
-		}
-
-		else if (MatrixFirs[0].size() != MatrixSecond.size()) throw string("Ошибка: размеры матриц не совпадают для умножения");
-
-		// Умножение двух матриц
-		else MatrixMultiplication(MatrixFirs, MatrixSecond);
-	}
+	// Сохраняем результат
+	MatrixResult = operationResult.matrixData;
 
 	// Вывод результата
 	MatrixOut(MatrixResult);
-
 	// Сохранение результата
 	saveResult();
 }
@@ -85,47 +66,41 @@ void Matrix::executeMatrix(string oper, string firstOperand, string secondOperan
 // Функция для выполнения операции над одной матрицей
 // oper – операция
 // first_ – матрица
-void Matrix::executeMatrix(string oper, string firstOperand)
+void Matrix::executeMatrix(string oper, string operand) 
 {
-	// Извлекаем первую матрицу
-	vector<vector<double>> MatrixFirs = definitionOperand(firstOperand);
-	
+	// Извлекаем матрицу
+	MathMatrix matrixOperand = OperandToMatrix(operand);
+
 	if (oper == "Det") 
 	{
-		if (MatrixFirs.size() != MatrixFirs[0].size()) throw string("Матрица должна быть квадратной для вычисления детерминанта");
-		
+		if (matrixOperand.matrixData.size() != matrixOperand.matrixData[0].size()) throw string("Матрица должна быть квадратной для вычисления детерминанта");
 		// Вычисление определителя
-		cout << "Det: " << MatrixDeterm(MatrixFirs);
+		cout << "Det: " << MatrixDeterm(matrixOperand.matrixData);
 	}
-
-	if (oper == "T")
+	else if (oper == "T") 
 	{
 		// Транспонирование матрицы
-		MatrixTranspose(MatrixFirs);
-
+		MatrixTranspose(matrixOperand.matrixData);
 		// Вывод результата
 		MatrixOut(MatrixResult);
-
 		// Сохранение результата
 		saveResult();
 	}
-
-	if (oper == "Norm")
+	else if (oper == "Norm") 
 	{
 		// Вычисление различных норм матрицы
 		cout << "Matrix Norms" << endl;
-		cout << "Max Norm: " << MatrixNormMax(MatrixFirs) << endl;
-		cout << "M Norm: " << MatrixNormM(MatrixFirs) << endl;
-		cout << "L Norm: " << MatrixNormL(MatrixFirs) << endl;
-		cout << "K Norm: " << MatrixNorm(MatrixFirs) << endl;
+		cout << "Max Norm: " << MatrixNormMax(matrixOperand.matrixData) << endl;
+		cout << "M Norm: " << MatrixNormM(matrixOperand.matrixData) << endl;
+		cout << "L Norm: " << MatrixNormL(matrixOperand.matrixData) << endl;
+		cout << "K Norm: " << MatrixNorm(matrixOperand.matrixData) << endl;
 	}
-
-	if (oper == "Inv")
+	else if (oper == "Inv") 
 	{
-		if (MatrixFirs.size() != MatrixFirs[0].size()) throw string("Матрица должна быть квадратной для вычисления обратной");
+		if (matrixOperand.matrixData.size() != matrixOperand.matrixData[0].size()) throw string("Матрица должна быть квадратной для вычисления обратной");
 
 		// Вычисление обратной матрицы
-		MatrixInverse(MatrixFirs);
+		MatrixInverse(matrixOperand.matrixData);
 
 		// Вывод результата
 		MatrixOut(MatrixResult);
@@ -133,9 +108,10 @@ void Matrix::executeMatrix(string oper, string firstOperand)
 		// Сохранение результата
 		saveResult();
 	}
-
 	// Вычисление ранга матрицы
-	if (oper == "Rang") cout << "Rang: " << MatrixRang(MatrixFirs) << endl;
+	else if (oper == "Rang") cout << "Rang: " << MatrixRang(matrixOperand.matrixData) << endl;
+	
+	else throw string("Неизвестная операция");
 }
 
 // Функция для запроса у пользователя сохранения результата операции
@@ -151,9 +127,9 @@ bool Matrix::requestSaveResult()
 		// Получаем ввод
 		input = _getch();
 
-		if (input == "y" || input == "Y") return true;
+		if (input == "y" or input == "Y") return true;
 
-		else if (input == "n" || input == "N") return false;
+		else if (input == "n" or input == "N") return false;
 
 		else
 		{
@@ -162,6 +138,8 @@ bool Matrix::requestSaveResult()
 		}
 	}
 }
+
+
 
 // Функция для сохранения результата операции
 void Matrix::saveResult()
@@ -184,7 +162,6 @@ void Matrix::saveResult()
 	do
 	{
 		flagSave = true;
-
 		// Запрос имени для сохранения матрицы
 		string matrixName = inputNameMatrix(false);
 

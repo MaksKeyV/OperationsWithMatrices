@@ -26,9 +26,9 @@ bool Matrix::correctNumberMatrix(string& input)
         return false;
     }
 
-    if (input.length() > 20)
+    if (input.length() > 10)
     {
-        cout << "Ошибка: число '" << input << "' слишком длинное (допустимо не более 20 символов)" << endl;
+        cout << "Ошибка: число '" << input << "' слишком длинное (допустимо не более 10 символов)" << endl;
         return false;
     }
 

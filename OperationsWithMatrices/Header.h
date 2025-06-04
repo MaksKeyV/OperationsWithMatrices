@@ -15,6 +15,42 @@
 
 using namespace std;
 
+//  ласс с операци€ми (+, -, *) над матрицами
+class MathMatrix 
+{
+public:
+	// ƒвумерный вектор дл€ хранени€ элементов матрицы
+	vector<vector<double>> matrixData;
+
+	//  онструктор по умолчанию
+	MathMatrix() = default;
+
+	//  онструктор с инициализацией матрицы
+	// inputData Ц входна€ матрица
+	MathMatrix(vector<vector<double>> inputData) : matrixData(inputData) {};
+
+	// ѕерегрузка оператора сложени€ двух матриц
+	// secondMatrix Ц матрица, с которой складываем текущую
+	MathMatrix operator+(MathMatrix& secondMatrix);
+
+	// ѕерегрузка оператора вычитани€ двух матриц
+	// secondMatrix Ц матрица, которую вычитаем из текущей
+	MathMatrix operator-(MathMatrix& secondMatrix);
+
+	// ѕерегрузка оператора умножени€ двух матриц
+	// secondMatrix Ц матрица, на которую умножаетс€ текуща€
+	MathMatrix operator*(MathMatrix& secondMatrix);
+
+	// ѕерегрузка оператора умножени€ матрицы на число
+	// number Ц число, на которое умножаем матрицу
+	MathMatrix operator*(double number);
+
+	// ѕерегрузка оператора умножени€ числа на матрицу
+	// number Ц множитель
+	// matrix Ц матрица-множимое
+	friend MathMatrix operator*(double number, MathMatrix& matrix);
+};
+
 //  ласс дл€ матричных операций
 class Matrix
 {
@@ -31,31 +67,9 @@ class Matrix
 		// “очность отображени€
 		int precision = 3;
 		 
-
-
-		// ‘ункци€ дл€ сложени€ матриц
-		// MatrixFirst Ц перва€ матрица
-		// MatrixSecond Ц втора€ матрица
-		vector<vector<double>> MatrixSumm(vector<vector<double>>& MatrixFirst, vector<vector<double>>& MatrixSecond);
-
-		// ‘ункци€ дл€ вычитани€ матриц
-		// MatrixFirst Ц перва€ матрица
-		// MatrixSecond Ц втора€ матрица
-		vector<vector<double>> MatrixSubt(vector<vector<double>>& MatrixFirst, vector<vector<double>>& MatrixSecond);
-
 		// ‘ункци€ дл€ вычислени€ определител€ матрицы
 		// MatrixFirst Ц матрица
 		double MatrixDeterm(vector<vector<double>>& MatrixFirst);
-
-		// ‘ункци€ дл€ умножени€ матриц
-		// MatrixFirst Ц перва€ матрица
-		// MatrixSecond Ц втора€ матрица
-		vector<vector<double>> MatrixMultiplication(vector<vector<double>>& MatrixFirst, vector<vector<double>>& MatrixSecond);
-
-		// ‘ункци€ дл€ умножени€ матрицы на число
-		// MatrixFirst Ц матрица
-		// constValue Ц значение константы 
-		vector<vector<double>> MatrixMultiplicationConst(vector<vector<double>>& MatrixFirst, double constValue);
 
 		// ‘ункци€ дл€ транспонировани€ матрицы
 		// MatrixFirst Ц матрица
@@ -85,14 +99,16 @@ class Matrix
 		// MatrixFirst Ц матрица
 		int MatrixRang(vector<vector<double>>& MatrixFirst);
 
+		// ѕреобразование строки в объект MathMatrix (по имени матрицы или числу)
+		// input Ц строка, представл€юща€ им€ матрицы или число
+		MathMatrix OperandToMatrix(string input);
+
 		// ‘ункци€ дл€ вывода всех пользовательских матриц
 		void outputAllMatrix();
 		
 
 
-		// ‘ункци€ дл€ извлечени€ матрицы
-		// operand - операнд
-		vector<vector<double>> definitionOperand(string& operand);
+	
 
 		// ‘ункци€ дл€ выполнени€ операции над двум€ матрицами
 		// oper Ц операци€
@@ -151,7 +167,6 @@ class Matrix
 		// oper Ц оператор
 		bool twoOperator(string oper);
 
-		
 
 		// ‘ункци€ дл€ запроса имени матрицы у пользовател€
 		// fladOutMsg Ц флаг, нужно ли выводить сообщение о вводе

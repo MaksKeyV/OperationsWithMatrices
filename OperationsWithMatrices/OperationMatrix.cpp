@@ -1,35 +1,90 @@
 ﻿#include "Header.h"
 
-// Функция для сложения матриц
-// MatrixFirst – первая матрица
-// MatrixSecond – вторая матрица
-vector<vector<double>> Matrix::MatrixSumm(vector<vector<double>>& MatrixFirst, vector<vector<double>>& MatrixSecond)
-{
-	// Результирующая матрица
-	MatrixResult = vector<vector<double>>(MatrixFirst.size(), vector<double>(MatrixFirst[0].size()));
 
-	// Проход по всем элементам матриц построчно и по столбцам
-	for (int i = 0; i < MatrixFirst.size(); i++)
-		for (int j = 0; j < MatrixFirst[0].size(); j++)
-			MatrixResult[i][j] = MatrixFirst[i][j] + MatrixSecond[i][j];
-		
-	return MatrixResult;
+// Перегрузка оператора сложения двух матриц
+// secondMatrix – матрица, с которой складываем текущую
+MathMatrix MathMatrix::operator+(MathMatrix& secondMatrix)
+{
+	if (matrixData.size() != secondMatrix.matrixData.size() or matrixData[0].size() != secondMatrix.matrixData[0].size())
+		throw string("Ошибка: размеры матриц не совпадают для сложения");
+
+	// Результирующая матрица
+	vector<vector<double>> resultMatrix(matrixData.size(), vector<double>(matrixData[0].size()));
+
+	// Проходим по всем элементам матриц построчно и по столбцам
+	for (int i = 0; i < matrixData.size(); i++)
+		for (int j = 0; j < matrixData[0].size(); j++)
+			resultMatrix[i][j] = matrixData[i][j] + secondMatrix.matrixData[i][j];
+
+	return MathMatrix(resultMatrix);
 }
 
-// Функция для вычитания матриц
-// MatrixFirst – первая матрица
-// MatrixSecond – вторая матрица
-vector<vector<double>> Matrix::MatrixSubt(vector<vector<double>>& MatrixFirst, vector<vector<double>>& MatrixSecond)
+// Перегрузка оператора вычитания двух матриц
+// secondMatrix – матрица, которую вычитаем из текущей
+MathMatrix MathMatrix::operator-(MathMatrix& secondMatrix) 
+{
+	if (matrixData.size() != secondMatrix.matrixData.size() or matrixData[0].size() != secondMatrix.matrixData[0].size())
+		throw string("Ошибка: размеры матриц не совпадают для вычитания");
+
+	// Результирующая матрица
+	vector<vector<double>> resultMatrix(matrixData.size(), vector<double>(matrixData[0].size()));
+
+	// Проходим по всем элементам матриц построчно и по столбцам
+	for (int i = 0; i < matrixData.size(); i++)
+		for (int j = 0; j < matrixData[0].size(); j++)
+			resultMatrix[i][j] = matrixData[i][j] - secondMatrix.matrixData[i][j];
+
+	return MathMatrix(resultMatrix);
+}
+
+// Перегрузка оператора умножения двух матриц
+// secondMatrix – матрица, на которую умножается текущая
+MathMatrix MathMatrix::operator*(MathMatrix& secondMatrix) 
+{
+	if (matrixData[0].size() != secondMatrix.matrixData.size())
+		throw string("Ошибка: размеры матриц не совпадают для умножения");
+
+	// Результирующая матрица
+	vector<vector<double>> resultMatrix(matrixData.size(), vector<double>(secondMatrix.matrixData[0].size()));
+
+	// Проходим по строкам первой матрицы
+	for (int i = 0; i < matrixData.size(); i++)
+	{
+		// Проходим по столбцам второй матрицы
+		for (int j = 0; j < secondMatrix.matrixData[0].size(); j++)
+		{
+			resultMatrix[i][j] = 0;
+			// Складываем произведения соответствующих элементов строки и столбца
+			for (int k = 0; k < matrixData[0].size(); k++)
+				resultMatrix[i][j] += matrixData[i][k] * secondMatrix.matrixData[k][j];
+		}
+	}
+
+	return MathMatrix(resultMatrix);
+}
+
+// Перегрузка оператора умножения матрицы на число
+// number – число, на которое умножаем матрицу
+MathMatrix MathMatrix::operator*(double number)
 {
 	// Результирующая матрица
-	MatrixResult = vector<vector<double>>(MatrixFirst.size(), vector<double>(MatrixFirst[0].size()));
+	vector<vector<double>> resultMatrix(matrixData.size(), vector<double>(matrixData[0].size()));
 
-	// Проход по всем элементам матриц построчно и по столбцам
-	for (int i = 0; i < MatrixFirst.size(); i++)
-		for (int j = 0; j < MatrixFirst[0].size(); j++)
-			MatrixResult[i][j] = MatrixFirst[i][j] - MatrixSecond[i][j];
+	// Проходим по всем элементам матриц построчно и по столбцам
+	for (int i = 0; i < matrixData.size(); i++)
+		for (int j = 0; j < matrixData[0].size(); j++)
+			resultMatrix[i][j] = matrixData[i][j] * number;
 
-	return MatrixResult;
+	return MathMatrix(resultMatrix);
+}
+
+// Перегрузка оператора умножения: число * матрица
+// number – множитель
+// matrix – матрица-множимое
+MathMatrix operator*(double number, MathMatrix& matrix) 
+{
+	// Возвращаем результат умножения матрицы на число
+	return matrix * number;
 }
 
 // Функция для вычисления определителя матрицы
@@ -79,44 +134,6 @@ double Matrix::MatrixDeterm(vector<vector<double>>& MatrixFirst)
 	}
 }
 
-// Функция для умножения матриц
-// MatrixFirst – первая матрица
-// MatrixSecond – вторая матрица
-vector<vector<double>> Matrix::MatrixMultiplication(vector<vector<double>>& MatrixFirst, vector<vector<double>>& MatrixSecond)
-{
-	// Результирующая матрица
-	MatrixResult = vector<vector<double>>(MatrixFirst.size(), vector<double>(MatrixSecond[0].size()));
-
-	// Проход по строкам первой матрицы
-	for (int i = 0; i < MatrixFirst.size(); i++)
-	{
-		// Проход по столбцам второй матрицы
-		for (int j = 0; j < MatrixSecond[0].size(); j++)
-		{
-			MatrixResult[i][j] = 0;
-			// Складываем произведения соответствующих элементов строки и столбца
-			for (int k = 0; k < MatrixSecond.size(); k++)
-				MatrixResult[i][j] += MatrixFirst[i][k] * MatrixSecond[k][j];
-		}
-	}
-	return MatrixResult;
-}
-
-// Функция для умножения матрицы на число
-// MatrixFirst – матрица
-// constValue – значение константы 
-vector<vector<double>> Matrix::MatrixMultiplicationConst(vector<vector<double>>& MatrixFirst, double constValue)
-{
-	// Результирующая матрица
-	MatrixResult = vector<vector<double>>(MatrixFirst.size(), vector<double>(MatrixFirst[0].size()));
-
-	// Проход по всем элементам матриц построчно и по столбцам, умножая на константу
-	for (int i = 0; i < MatrixFirst.size(); i++)
-		for (int j = 0; j < MatrixFirst[0].size(); j++)
-			MatrixResult[i][j] = MatrixFirst[i][j] * constValue;
-
-	return MatrixResult;
-}
 
 // Функция для транспонирования матрицы
 // MatrixFirst – матрица
@@ -264,7 +281,9 @@ vector<vector<double>> Matrix::MatrixInverse(vector<vector<double>>& MatrixFirst
 	matrix = MatrixTranspose(matrix);
 
 	// Делим матрицу на определитель — получаем обратную матрицу
-	return MatrixResult = MatrixMultiplicationConst(matrix, (1.0 / determ));
+	MathMatrix inverseMatrix = MathMatrix(matrix) * (1.0 / determ);
+	MatrixResult = inverseMatrix.matrixData;
+	return MatrixResult;
 }
 
 // Функция для вычисления ранга матрицы
@@ -287,7 +306,7 @@ int Matrix::MatrixRang(vector<vector<double>>& MatrixFirst)
 				{
 					// Множитель для вычитания строки
 					double mult = MatrixFirst[collum][row] / MatrixFirst[row][row];
-
+					
 					for (int i = 0; i < rank; i++) 
 						MatrixFirst[collum][i] -= mult * MatrixFirst[row][i];
 				}

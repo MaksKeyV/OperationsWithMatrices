@@ -15,10 +15,10 @@ vector<int> Matrix::columnWidths(vector<vector<double>>& matrix)
         // Проход по строкам матрицы
         for (int i = 0; i < matrix.size(); i++)
         {
-            stringstream ss;
+            stringstream sstr;
             // Устанавка нужной точности
-            ss << fixed << setprecision(precision) << matrix[i][j];
-            string str = ss.str();
+            sstr << fixed << setprecision(precision) << matrix[i][j];
+            string str = sstr.str();
             // Замена запятой на точку
             replace(str.begin(), str.end(), ',', '.');
 
@@ -46,10 +46,10 @@ void Matrix::MatrixOut(vector<vector<double>>& matrix)
         // Проход по столбцам матрицы
         for (int j = 0; j < matrix[0].size(); j++)
         {
-            stringstream ss;
+            stringstream sstr;
             // Устанавка нужной точности
-            ss << fixed << setprecision(precision) << matrix[i][j];
-            string str = ss.str();
+            sstr << fixed << setprecision(precision) << matrix[i][j];
+            string str = sstr.str();
             // Замена запятой на точку
             replace(str.begin(), str.end(), ',', '.');
 

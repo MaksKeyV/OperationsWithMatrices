@@ -159,6 +159,7 @@ void Matrix::deleteMatrix()
     else  cout << "Ошибка: матрица с именем '" << matrixName << "' не найдена" << endl << endl;
 }
 
+
 // Функция для запроса имени операнда у пользователя
 // strOperand - строка-подсказка
 string Matrix::inputMatrixOperand(string strOperand)
@@ -206,6 +207,7 @@ string Matrix::inputMatrixOperand(string strOperand)
 
     return "back";
 } 
+
 
 // Функция для выполнения операций над матрицами по пользовательскому вводу
 void Matrix::userCalculateMatrix()
